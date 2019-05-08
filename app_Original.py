@@ -32,18 +32,10 @@ app = dash.Dash(__name__)
 server = app.server
 
 
-df = pd.read_csv('https://raw.githubusercontent.com/plotly/dash-table/master/datasets/gapminder-small.csv')
-df=df[['country','year','pop']]
-Table=dash_table.DataTable(
-    id='table',
-    columns=[{"name": i, "id": i} for i in df.columns],
-    data=df.to_dict("rows"),
-      n_fixed_rows=1,
-        style_cell={
-            'whiteSpace': 'normal',
-            'textAlign': 'left',
-        },
-)
+df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/Emissions%20Data.csv').reset_index()
+df['Emission'] = df['Emission'].map(lambda x: '{0:.2f}'.format(x))
+
+
 
 def generate_data(n_samples, dataset, noise):
     if dataset == 'moons':
@@ -113,22 +105,12 @@ app.layout = html.Div(children=[
         html.Div(className='row', children=[
             html.Div(
                 id='div-graphs',
-                children=dash_table.DataTable(
+                children=dcc.Graph(
                     id='graph-sklearn-svm',
                     style={'display': 'none'}
                 )
             ),
 
-            html.Div(
-                id='Table',
-                  style={
-                    'min-width': '24.5%',
-                    'max-height': 'calc(100vh - 85px)',
-                    'overflow-y': 'auto',
-                    'overflow-x': 'hidden',
-                },
-                children=Table    
-            ),
             html.Div(
                 className='three columns',
                 style={
@@ -448,9 +430,9 @@ def update_svm_graph(kernel,
             className='six columns',
             style={'margin-top': '50px'},
             children=[
-                dash_table.DataTable(
+                dcc.Graph(
                     id='graph-sklearn-svm',
-                    figure=Table,
+                    figure=prediction_figure,
                     style={'height': 'calc(100vh - 90px)'}
                 )
             ]),
